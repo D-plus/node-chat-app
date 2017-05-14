@@ -8,4 +8,17 @@
   <body>
     <p>Welcome to the chat app<p>
   </body>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('connect', () => {
+      console.log('connected');
+    });
+    socket.on('disconnect', () => {
+      console.log('server is disconnected');
+    })
+  </script>
+
 </html>
