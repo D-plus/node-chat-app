@@ -1,15 +1,13 @@
-const socket = io();
+var socket = io();
 
-socket.on('connect', () => {
-  console.log('connected');
-
-  //socket.emit('createMessage', { from: 'Dmitriy', text: 'Hi to everyone!'  });
+socket.on('connect', function () {
+  console.log('Connected to server');
 });
 
-socket.on('newMessage', message => {
-  console.log('Here is a new message: -', message);
+socket.on('disconnect', function () {
+  console.log('Disconnected from server');
 });
 
-// socket.on('disconnect', () => {
-//   console.log('server is disconnected');
-// });
+socket.on('newMessage', function (message) {
+  console.log('newMessage', message);
+});

@@ -4,34 +4,47 @@ const express = require('express');
 const socketIO = require('socket.io');
 
 const publicPath = path.join(__dirname, '../public');
-
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
-
 const port = process.env.PORT || 3000;
-
-//socket.emit - emit for single current connection, but io.emit emits event to all connections
-
-io.on('connect', (socket) => {
-  //console.log('Client is connected');
-
-  socket.on('createMessage', message => {
-    //console.log('Client sent us message', message);
-
-    // send it to the all users in chat
-    io.emit('newMessage', Object.assign(message, { timeStamp: new Date().getTime() }) );
-  })
-
-  // socket.on('disconnect', () => {
-  //   console.log('Client is disconnected');
-  // });
-
-});
-
+var app = express();
+var server = http.createServer(app);
+var io = socketIO(server);
 
 app.use(express.static(publicPath));
 
+io.on('connection', (socket) => {
+  console.log('New user connected');
+
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
+  });
+
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
+  socket.on('createMessage', (message) => {
+    console.log('createMessage', message);
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User was disconnected');
+  });
+});
+
 server.listen(port, () => {
-  console.log(`Listen on port: ${port}`);
+  console.log(`Server is up on ${port}`);
 });
