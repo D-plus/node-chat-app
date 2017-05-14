@@ -11,12 +11,21 @@ const io = socketIO(server);
 
 const port = process.env.PORT || 3000;
 
-io.on('connect', (socket) => {
-  console.log('Client is connected');
+//socket.emit - emit for single current connection, but io.emit emits event to all connections
 
-  socket.on('disconnect', () => {
-    console.log('Client is disconnected');
-  });
+io.on('connect', (socket) => {
+  //console.log('Client is connected');
+
+  socket.on('createMessage', message => {
+    //console.log('Client sent us message', message);
+
+    // send it to the all users in chat
+    io.emit('newMessage', Object.assign(message, { timeStamp: new Date().getTime() }) );
+  })
+
+  // socket.on('disconnect', () => {
+  //   console.log('Client is disconnected');
+  // });
 
 });
 
