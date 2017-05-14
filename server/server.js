@@ -9,7 +9,7 @@ var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 
 app.use(express.static(publicPath));
 
@@ -28,7 +28,16 @@ io.on('connection', (socket) => {
     //console.log('createMessage', message);
 
     io.emit('newMessage', generateMessage(message.from, message.text));
-    callback ? callback({ status: 'sent successfuly'}) : null;
+
+    callback ? callback() : null;
+
+  });
+
+  socket.on('createLocationMessage', (coords, callback) => {
+    console.log(coords)
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords));
+
+    callback();
   });
 
   socket.on('disconnect', () => {
